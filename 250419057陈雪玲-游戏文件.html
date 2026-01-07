@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跳格子游戏教程</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        header {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            color: #2575fc;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #6a11cb;
+            font-size: 1.4rem;
+            font-weight: 300;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+        }
+        
+        .left-panel, .right-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        h2 {
+            color: #2575fc;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #6a11cb;
+        }
+        
+        h3 {
+            color: #6a11cb;
+            margin: 15px 0 10px;
+        }
+        
+        .rules-list {
+            list-style-type: none;
+            margin: 15px 0;
+        }
+        
+        .rules-list li {
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .rules-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2575fc;
+            font-weight: bold;
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 25px auto;
+            max-width: 500px;
+        }
+        
+        .cell {
+            aspect-ratio: 1;
+            background-color: #e6f0ff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .cell.start {
+            background-color: #a8e6cf;
+        }
+        
+        .cell.finish {
+            background-color: #ffd3b6;
+        }
+        
+        .cell.special {
+            background-color: #ffaaa5;
+        }
+        
+        .cell.current {
+            box-shadow: 0 0 0 4px #2575fc;
+            transform: scale(1.05);
+        }
+        
+        .cell.visited {
+            background-color: #d4e6ff;
+        }
+        
+        .player {
+            width: 70%;
+            height: 70%;
+            background-color: #2575fc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            background-color: #6a11cb;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+        }
+        
+        button:hover {
+            background-color: #2575fc;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(37, 117, 252, 0.5);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .info-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .info-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #6a11cb;
+        }
+        
+        .info-label {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin: 20px 0;
+            min-height: 40px;
+            color: #2575fc;
+        }
+        
+        .special-rules {
+            background-color: #fff9e6;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #ffcc00;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: #6a11cb;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .dice {
+            width: 60px;
+            height: 60px;
+            background-color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2575fc;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 0 auto 20px;
+        }
+        
+        .dice.rolling {
+            animation: roll 0.5s ease-in-out;
+        }
+        
+        @keyframes roll {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .how-to-play {
+            margin-top: 25px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .game-board {
+                grid-template-columns: repeat(5, 1fr);
+                max-width: 350px;
+            }
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-gamepad"></i> 跳格子游戏教程</h1>
+            <p class="subtitle">经典童年游戏的数字版本 - 通过掷骰子前进，第一个到达终点者获胜</p>
+        </header>
+        
+        <div class="content">
+            <div class="left-panel">
+                <h2><i class="fas fa-book"></i> 游戏规则</h2>
+                <p>跳格子是一款简单有趣的棋盘游戏，玩家通过掷骰子决定前进的步数，第一个到达终点的玩家获胜。</p>
+                
+                <h3>基本规则</h3>
+                <ul class="rules-list">
+                    <li>游戏支持1-4名玩家，默认设置为2名玩家</li>
+                    <li>玩家轮流掷骰子，根据点数前进相应的格子数</li>
+                    <li>游戏板包含25个格子，从起点(1)到终点(25)</li>
+                    <li>第一个到达或超过终点的玩家获胜</li>
+                </ul>
+                
+                <div class="special-rules">
+                    <h3><i class="fas fa-star"></i> 特殊格子</h3>
+                    <p>游戏板上有三种特殊格子：</p>
+                    <ul class="rules-list">
+                        <li><strong>起点(绿色)</strong> - 所有玩家从这里开始</li>
+                        <li><strong>终点(橙色)</strong> - 到达这里即可获胜</li>
+                        <li><strong>特殊格子(红色)</strong> - 触发特殊效果（前进/后退）</li>
+                    </ul>
+                </div>
+                
+                <div class="how-to-play">
+                    <h3><i class="fas fa-play-circle"></i> 如何开始</h3>
+                    <p><span class="step-number">1</span> 点击"掷骰子"按钮，随机获得1-6的点数</p>
+                    <p><span class="step-number">2</span> 玩家将根据点数前进相应的格子</p>
+                    <p><span class="step-number">3</span> 如果落在特殊格子上，会触发额外效果</p>
+                    <p><span class="step-number">4</span> 轮流进行，直到有玩家到达终点</p>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <h2><i class="fas fa-chess-board"></i> 游戏板</h2>
+                <div class="game-board" id="gameBoard">
+                    <!-- 游戏格子将通过JavaScript动态生成 -->
+                </div>
+                
+                <div class="dice" id="dice">?</div>
+                
+                <div class="status" id="status">游戏准备开始！点击"掷骰子"按钮开始游戏。</div>
+                
+                <div class="controls">
+                    <button id="rollDiceBtn">
+                        <i class="fas fa-dice"></i> 掷骰子
+                    </button>
+                    <button id="newGameBtn">
+                        <i class="fas fa-redo"></i> 新游戏
+                    </button>
+                    <button id="addPlayerBtn">
+                        <i class="fas fa-user-plus"></i> 添加玩家
+                    </button>
+                    <button id="removePlayerBtn">
+                        <i class="fas fa-user-minus"></i> 移除玩家
+                    </button>
+                </div>
+                
+                <div class="game-info">
+                    <div class="info-item">
+                        <div class="info-value" id="currentPlayer">1</div>
+                        <div class="info-label">当前玩家</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value" id="playerCount">2</div>
+                        <div class="info-label">玩家总数</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value" id="turnCount">0</div>
+                        <div class="info-label">回合数</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>跳格子游戏教程 &copy; 2023 | 使用 HTML, CSS 和 JavaScript 创建</p>
+        </footer>
+    </div>
+
+    <script>
+        // 游戏配置
+        const gameConfig = {
+            totalCells: 25,
+            specialCells: {
+                5: { type: 'forward', steps: 3, text: '+3' },
+                9: { type: 'back', steps: 2, text: '-2' },
+                14: { type: 'forward', steps: 5, text: '+5' },
+                18: { type: 'back', steps: 4, text: '-4' },
+                22: { type: 'forward', steps: 2, text: '+2' }
+            },
+            maxPlayers: 4,
+            minPlayers: 1
+        };
+
+        // 游戏状态
+        let gameState = {
+            players: [
+                { id: 1, name: "玩家1", position: 1, color: "#2575fc" },
+                { id: 2, name: "玩家2", position: 1, color: "#6a11cb" }
+            ],
+            currentPlayerIndex: 0,
+            gameActive: true,
+            turnCount: 0,
+            diceValue: 0
+        };
+
+        // DOM元素
+        const gameBoard = document.getElementById('gameBoard');
+        const diceElement = document.getElementById('dice');
+        const statusElement = document.getElementById('status');
+        const currentPlayerElement = document.getElementById('currentPlayer');
+        const playerCountElement = document.getElementById('playerCount');
+        const turnCountElement = document.getElementById('turnCount');
+        const rollDiceBtn = document.getElementById('rollDiceBtn');
+        const newGameBtn = document.getElementById('newGameBtn');
+        const addPlayerBtn = document.getElementById('addPlayerBtn');
+        const removePlayerBtn = document.getElementById('removePlayerBtn');
+
+        // 初始化游戏板
+        function initGameBoard() {
+            gameBoard.innerHTML = '';
+            
+            for (let i = 1; i <= gameConfig.totalCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.id = `cell-${i}`;
+                cell.textContent = i;
+                
+                // 设置起点和终点
+                if (i === 1) {
+                    cell.classList.add('start');
+                } else if (i === gameConfig.totalCells) {
+                    cell.classList.add('finish');
+                }
+                
+                // 设置特殊格子
+                if (gameConfig.specialCells[i]) {
+                    cell.classList.add('special');
+                    
+                    const specialText = document.createElement('div');
+                    specialText.className = 'special-text';
+                    specialText.textContent = gameConfig.specialCells[i].text;
+                    specialText.style.position = 'absolute';
+                    specialText.style.top = '5px';
+                    specialText.style.right = '5px';
+                    specialText.style.fontSize = '0.8rem';
+                    specialText.style.color = '#d00';
+                    cell.appendChild(specialText);
+                }
+                
+                gameBoard.appendChild(cell);
+            }
+            
+            updateGameBoard();
+        }
+
+        // 更新游戏板显示
+        function updateGameBoard() {
+            // 清除所有格子的当前玩家标记和访问标记
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.classList.remove('current', 'visited');
+                // 移除所有玩家标记
+                const playerMarkers = cell.querySelectorAll('.player');
+                playerMarkers.forEach(marker => marker.remove());
+            });
+            
+            // 为每个玩家在当前位置添加标记
+            gameState.players.forEach(player => {
+                const cell = document.getElementById(`cell-${player.position}`);
+                if (cell) {
+                    const playerMarker = document.createElement('div');
+                    playerMarker.className = 'player';
+                    playerMarker.style.backgroundColor = player.color;
+                    playerMarker.textContent = player.id;
+                    cell.appendChild(playerMarker);
+                    
+                    // 标记当前玩家
+                    if (player.id === gameState.players[gameState.currentPlayerIndex].id) {
+                        cell.classList.add('current');
+                    }
+                    
+                    // 标记访问过的格子
+                    cell.classList.add('visited');
+                }
+            });
+        }
+
+        // 掷骰子
+        function rollDice() {
+            if (!gameState.gameActive) return;
+            
+            // 禁用掷骰子按钮
+            rollDiceBtn.disabled = true;
+            
+            // 骰子动画
+            diceElement.classList.add('rolling');
+            diceElement.textContent = '...';
+            
+            // 模拟骰子滚动
+            let rolls = 0;
+            const rollInterval = setInterval(() => {
+                diceElement.textContent = Math.floor(Math.random() * 6) + 1;
+                rolls++;
+                
+                if (rolls > 10) {
+                    clearInterval(rollInterval);
+                    
+                    // 确定最终骰子点数
+                    gameState.diceValue = Math.floor(Math.random() * 6) + 1;
+                    diceElement.textContent = gameState.diceValue;
+                    diceElement.classList.remove('rolling');
+                    
+                    // 移动玩家
+                    setTimeout(movePlayer, 500);
+                }
+            }, 100);
+        }
+
+        // 移动当前玩家
+        function movePlayer() {
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            const newPosition = currentPlayer.position + gameState.diceValue;
+            
+            // 更新状态显示
+            statusElement.textContent = `${currentPlayer.name} 掷出了 ${gameState.diceValue}，从 ${currentPlayer.position} 移动到 ${newPosition}`;
+            
+            // 更新玩家位置
+            currentPlayer.position = newPosition;
+            
+            // 检查是否到达或超过终点
+            if (newPosition >= gameConfig.totalCells) {
+                endGame(currentPlayer);
+                return;
+            }
+            
+            // 检查是否落在特殊格子上
+            if (gameConfig.specialCells[newPosition]) {
+                const specialCell = gameConfig.specialCells[newPosition];
+                let specialMessage = '';
+                
+                if (specialCell.type === 'forward') {
+                    currentPlayer.position += specialCell.steps;
+                    specialMessage = `${currentPlayer.name} 踩到了前进格，前进 ${specialCell.steps} 步到 ${currentPlayer.position}`;
+                    
+                    // 再次检查是否到达终点
+                    if (currentPlayer.position >= gameConfig.totalCells) {
+                        endGame(currentPlayer);
+                        return;
+                    }
+                } else if (specialCell.type === 'back') {
+                    currentPlayer.position = Math.max(1, currentPlayer.position - specialCell.steps);
+                    specialMessage = `${currentPlayer.name} 踩到了后退格，后退 ${specialCell.steps} 步到 ${currentPlayer.position}`;
+                }
+                
+                statusElement.textContent += `。${specialMessage}`;
+            }
+            
+            // 更新游戏板
+            updateGameBoard();
+            
+            // 增加回合数
+            gameState.turnCount++;
+            turnCountElement.textContent = gameState.turnCount;
+            
+            // 切换到下一个玩家
+            setTimeout(nextPlayer, 1500);
+        }
+
+        // 切换到下一个玩家
+        function nextPlayer() {
+            gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+            currentPlayerElement.textContent = gameState.players[gameState.currentPlayerIndex].id;
+            
+            // 更新状态显示
+            statusElement.textContent = `轮到 ${gameState.players[gameState.currentPlayerIndex].name} 掷骰子`;
+            
+            // 重新启用掷骰子按钮
+            rollDiceBtn.disabled = false;
+        }
+
+        // 结束游戏
+        function endGame(winner) {
+            gameState.gameActive = false;
+            statusElement.innerHTML = `<span style="color:#d00;">🎉 ${winner.name} 获胜！ 🎉</span><br>游戏结束，点击"新游戏"按钮重新开始。`;
+            rollDiceBtn.disabled = true;
+            
+            // 确保玩家位置显示在终点
+            winner.position = gameConfig.totalCells;
+            updateGameBoard();
+        }
+
+        // 开始新游戏
+        function newGame() {
+            // 重置游戏状态
+            gameState.players.forEach(player => {
+                player.position = 1;
+            });
+            gameState.currentPlayerIndex = 0;
+            gameState.gameActive = true;
+            gameState.turnCount = 0;
+            gameState.diceValue = 0;
+            
+            // 重置显示
+            diceElement.textContent = '?';
+            statusElement.textContent = '游戏准备开始！点击"掷骰子"按钮开始游戏。';
+            currentPlayerElement.textContent = gameState.players[gameState.currentPlayerIndex].id;
+            playerCountElement.textContent = gameState.players.length;
+            turnCountElement.textContent = gameState.turnCount;
+            
+            // 启用掷骰子按钮
+            rollDiceBtn.disabled = false;
+            
+            // 更新游戏板
+            updateGameBoard();
+        }
+
+        // 添加玩家
+        function addPlayer() {
+            if (gameState.players.length >= gameConfig.maxPlayers) {
+                statusElement.textContent = `最多只能有 ${gameConfig.maxPlayers} 名玩家`;
+                return;
+            }
+            
+            const newPlayerId = gameState.players.length + 1;
+            const playerColors = ["#2575fc", "#6a11cb", "#ff6b6b", "#51cf66"];
+            
+            gameState.players.push({
+                id: newPlayerId,
+                name: `玩家${newPlayerId}`,
+                position: 1,
+                color: playerColors[(newPlayerId - 1) % playerColors.length]
+            });
+            
+            playerCountElement.textContent = gameState.players.length;
+            statusElement.textContent = `已添加 ${gameState.players[gameState.players.length - 1].name}`;
+            
+            // 如果不是游戏进行中，更新游戏板
+            if (!gameState.gameActive) {
+                updateGameBoard();
+            }
+        }
+
+        // 移除玩家
+        function removePlayer() {
+            if (gameState.players.length <= gameConfig.minPlayers) {
+                statusElement.textContent = `最少需要 ${gameConfig.minPlayers} 名玩家`;
+                return;
+            }
+            
+            const removedPlayer = gameState.players.pop();
+            playerCountElement.textContent = gameState.players.length;
+            statusElement.textContent = `已移除 ${removedPlayer.name}`;
+            
+            // 如果当前玩家索引超出范围，调整它
+            if (gameState.currentPlayerIndex >= gameState.players.length) {
+                gameState.currentPlayerIndex = 0;
+                currentPlayerElement.textContent = gameState.players[gameState.currentPlayerIndex].id;
+            }
+            
+            // 如果不是游戏进行中，更新游戏板
+            if (!gameState.gameActive) {
+                updateGameBoard();
+            }
+        }
+
+        // 初始化游戏
+        function initGame() {
+            initGameBoard();
+            
+            // 设置事件监听器
+            rollDiceBtn.addEventListener('click', rollDice);
+            newGameBtn.addEventListener('click', newGame);
+            addPlayerBtn.addEventListener('click', addPlayer);
+            removePlayerBtn.addEventListener('click', removePlayer);
+            
+            // 初始显示
+            currentPlayerElement.textContent = gameState.players[gameState.currentPlayerIndex].id;
+            playerCountElement.textContent = gameState.players.length;
+            turnCountElement.textContent = gameState.turnCount;
+        }
+
+        // 页面加载完成后初始化游戏
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
